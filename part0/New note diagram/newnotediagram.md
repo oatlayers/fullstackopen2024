@@ -13,6 +13,9 @@ sequenceDiagram
     Note right of browser: The browser reloads which causes three more HTTP GET requests.
     
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    server-->>browser: the main.css file
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    server-->>browser: the main.js file
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    server-->>browser: the data.json file
 ```
