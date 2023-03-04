@@ -1,64 +1,78 @@
 const App = () => {
-  const course = 'Half Stack application development'
-  const part1 = 'Fundamentals of React'
-  const exercises1 = 10
-  const part2 = 'Using props to pass data'
-  const exercises2 = 7
-  const part3 = 'State of a component'
-  const exercises3 = 14
-
-  const Header = (props) => {
-    return (
-        <div>
-            <p>{course}</p>
-        </div>
-    )
-}
-  const Part1 = (props) => {
-    return (
-      <div>
-        <p>{part1} {exercises1}</p>
-      </div>
-    )
-  }
-  const Part2 = (props) => {
-    return (
-      <div>
-        <p>{part2} {exercises2}</p>
-      </div>
-    )
-  }
-  const Part3 = (props) => {
-    return (
-      <div>
-        <p>{part3} {exercises3}</p>
-      </div>
-    )
-  }
-  const Content = (props) => {
-      return (
-          <div>
-            <Part1 />
-            <Part2 />
-            <Part3 />
-          </div>
-      )
+  const course = {
+    name: 'Half Stack application development',
+    parts: [
+      {
+        name: 'Fundamentals of React',
+        exercises: 10
+      },
+      {
+        name: 'Using props to pass data',
+        exercises: 7
+      },
+      {
+        name: 'State of a component',
+        exercises: 14
+      }
+    ]
   }
 
-  const Total = (props) => {
-      return (
-          <div>
-              <p>Number of exercises    {exercises1 + exercises2 + exercises3}</p>
-          </div>
-      )
-  }
+  const Header = () => {
+    return (
+      <h1>
+          <p>{course.name}</p>
+      </h1>
+    )
 
+  }
+  const Part1 = () => {
+    return (
+      <div>
+          <p>{course.parts[0].name} {course.parts[0].exercises}</p>
+      </div>
+    )
+
+  }
+  const Part2 = () => {
+    return (
+      <div>
+          <p>{course.parts[1].name} {course.parts[1].exercises}</p>
+      </div>
+    )
+
+  }
+  const Part3 = () => {
+    return (
+      <div>
+          <p>{course.parts[2].name} {course.parts[2].exercises}</p>
+      </div>
+    )
+
+  }
+  const Content = () => {
+    return (
+      <div>
+          <Part1 />
+          <Part2 />
+          <Part3 />
+      </div>
+    )
+
+  }
+  const Total = () => {
+    return (
+      <div>
+          <p>Number of exercises {course.parts[0].exercises + course.parts[1].exercises + course.parts[2].exercises}</p>
+      </div>
+    )
+
+  }
   return (
-    <div>
-      <Header />
-      <Content />
-      <Total />
-    </div>
+      <div>
+          <Header />
+          <Content />
+          <Total />
+      </div>
   )
 }
 
