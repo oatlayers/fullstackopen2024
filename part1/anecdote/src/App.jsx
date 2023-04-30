@@ -16,7 +16,6 @@ const App = () => {
   const getRandomInt = () => setSelected(Math.floor(Math.random() * 8))
    
   const [counters, setCounters] = useState(new Array(8).fill(0))
-  
   const handleVote = () => {
     const newCounters = [...counters]
     newCounters[selected] += 1
