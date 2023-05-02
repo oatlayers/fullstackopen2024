@@ -7,19 +7,27 @@ const Header = ({courses}) => {
   )
 }
 
-// generate parts for arbitrary number of courses. keys included.
-/* 
-perhaps u can find how much object the array contains, use that as the index and then u can apply map for the parts.
+// generate parts for arbitrary number of courses. keys included. perhaps u can find how much object the array contains, use that as the index and then u can apply map for the parts.
 
-*/
-// const Course = ({courses}) => {
-//   const findParts = courses[]
-//   return (
-//     <>
+const Course = ({courses}) => {
+  const h = []
+  const j = []
+  const k = []
+  for (i = 0; i < courses.length; i++) {
+    for (i = 0; i < courses.parts.length; i++) {
+      h.push(courses.parts.name);
+      j.push(courses.parts.exercises);
+      k.push(courses.parts.id)
+    }
+  }
 
-//     </>  
-//   )
-// }
+  return (
+    <>
+      {<p key={}></p>}
+    </>
+  )
+
+}
 
 const App = () => {
   const courses = [
@@ -71,6 +79,7 @@ const App = () => {
     <>
       <h1>Web development curriculum</h1>
       <Header courses={courses}/>
+      <Course courses={courses}/>
     </>
   )
 }
