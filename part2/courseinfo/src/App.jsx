@@ -1,24 +1,4 @@
-// using map to get all course header names; for arbitrary number of courses. keys included
-const Header = ({courses}) => {
-  return (
-    <>
-      {courses.map(courses => <h2 key={courses.id}>{courses.name}</h2>)}
-    </>
-  )
-}
-
-// generate parts for arbitrary number of courses. keys included. perhaps u can find how much object the array contains, use that as the index and then u can apply map for the parts.
-
-const Course = ({ course }) => {
-  return (
-    <div>
-      <h2>{course.name}</h2>
-      {course.parts.map(part =>
-        <p key={part.id}>{part.name} - {part.exercises} exercises</p>
-      )}
-    </div>
-  )
-}
+import Course from './components/Course.jsx'
 
 const App = () => {
   const courses = [
@@ -68,9 +48,10 @@ const App = () => {
 
   return (
     <>
+      <h1>Web development curriculum</h1>
       {courses.map(course =>
         <Course key={course.id} course={course} />
-      )}
+      )}  
     </>
   )
 }
