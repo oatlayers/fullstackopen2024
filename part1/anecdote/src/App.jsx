@@ -19,7 +19,7 @@ const App = () => {
   const handleVote = () => {
     const newCounters = [...counters]
     newCounters[selected] += 1
-    setCounters(newCounters)  
+    setCounters(newCounters)
   }
 
   const findLargest = Math.max(...counters)
