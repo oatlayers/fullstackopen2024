@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Name = ({person}) => {
+const Name = ({ person }) => {
   return (
     <li>{person.name}</li>
   )
@@ -8,17 +8,25 @@ const Name = ({person}) => {
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Alan Turing'}
+    {name: "Alan Turing"},
+    {name: "Bernard Lewis"}
   ])
   const [newName, setNewName] = useState('')
   
-  const addNumber = (event) => {
-    event.preventDefault();
-    const newObject = {
-      name: newName
+  const addPerson = (event) => {
+    event.preventDefault()
+
+    if (persons.find((p) => p["name"] === newName)) {
+      alert(`${newName} is already added to phonebook`)
+      setNewName('')
+      return false
     }
 
-    setPersons(persons.concat(newObject))
+    const nameObject = {
+      name: newName
+    }
+    
+    setPersons(persons.concat(nameObject))
     setNewName('')
   }
 
@@ -30,7 +38,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNumber}>
+      <form onSubmit={addPerson}>
         <div>
           name: <input value={newName} onChange={handleChange}/>
         </div>
