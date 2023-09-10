@@ -1,18 +1,9 @@
-const Filter = ({persons}) => {
-    const handleFilterChange = (e) => {
-        setFilterPersons(
-            persons.filter(
-            (person) =>
-                person.name.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1
-            )
-        );
-        };
-
-    <form>
-        filter shown with <input onChange={handleFilterChange}/>
-    </form>
-
+const Filter = ({handleFilterChange}) => { 
+    return (
+        <p>
+            filter showaaan with <input onChange={handleFilterChange}/>
+        </p>
+    )
 }
-
 
 export default Filter
