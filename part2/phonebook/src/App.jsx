@@ -1,5 +1,5 @@
-import { useState } from "react"
-
+import { useEffect, useState } from "react"
+import axios from 'axios'
 //Maintain the application's state and all event handlers in the App root component.
 
 const FilterInput = ({filterText, handleFilter}) => {
@@ -48,25 +48,19 @@ const PersonsFilter = ({filterText, filterPersons, persons}) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Marcus Aurelius",
-      number: "1634-3345-1311"
-    },
-    { name: "Lucius Annaeus Seneca",
-    number: "5978-8564-6473"
-    },
-    { name: "Antoninus Pius",
-    number: "4678-7463-3324"
-    },
-    { name: "Trajan",
-    number: "1114-6738-8253"
-    }
-  ])
-  
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNum, setNewNum] = useState('')
   const [filterText, setFilterText] = useState('')
   const [filterPersons, setFilterPersons] = useState([])
+
+  useEffect(() => {
+    axios
+    .get('http://localhost:3001/persons')
+    .then(response => {
+      setPersons(response.data)
+    })
+  }, [])
   
   const addPerson = (event) => {
     event.preventDefault()

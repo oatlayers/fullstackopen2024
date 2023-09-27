@@ -1,0 +1,8 @@
+{
+  "persons": [
+    { "name": "Marcus Aurelius", "number": "1634-3345-1311", "id": 1 },
+    { "name": "Lucius Annaeus Seneca", "number": "5978-8564-6473", "id": 2 },
+    { "name": "Antoninus Pius", "number": "4678-7463-3324", "id": 3 },
+    { "name": "Trajan", "number": "1114-6738-8253", "id": 4 }
+  ]
+}
