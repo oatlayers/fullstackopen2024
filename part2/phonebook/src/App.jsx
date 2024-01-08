@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
-import axios from 'axios'
-//Maintain the application's state and all event handlers in the App root component.
+import personService from './services/persons'
 
 const FilterInput = ({filterText, handleFilter}) => {
   return (
@@ -47,6 +46,7 @@ const PersonsFilter = ({filterText, filterPersons, persons}) => {
   )
 }
 
+//Maintain the application's state and all event handlers in the App root component.
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
@@ -55,10 +55,10 @@ const App = () => {
   const [filterPersons, setFilterPersons] = useState([])
 
   useEffect(() => {
-    axios
-    .get('http://localhost:3001/persons')
-    .then(response => {
-      setPersons(response.data)
+    personService
+    .getAll()
+    .then(initialPersons => {
+      setPersons(initialPersons)
     })
   }, [])
   
@@ -77,13 +77,12 @@ const App = () => {
       number: newNum
     }
 
-    axios
-    .post('http://localhost:3001/persons', nameObject)
-    .then(response => {
-      setPersons(persons.concat(response.data))
-    
-    setNewName('')
-    setNewNum('')
+    personService
+    .create(nameObject)
+    .then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewNum('')
     })
   }
 
