@@ -26,17 +26,26 @@ const PersonForm = ({addPerson, newName, handleChange, handleNumChange, newNum})
   )
 }
 
-const PersonsFilter = ({filterText, filterPersons, persons}) => {
+const PersonsFilter = ({filterText, filterPersons, persons, toDelete}) => {
+
   const ifFiltered =
       <>
-        {filterPersons.map((person) => 
-        <p key={person.name}>{person.name} {person.number}</p>)}
+        {filterPersons.map(person => 
+          <p key={person.id}>
+            {person.name} {person.number} 
+            <button onClick={() => toDelete(person)}>delete</button>
+          </p>
+        )}
       </>
 
   const notFiltered =
       <>
-        {persons.map((person) => 
-        <p key={person.name}>{person.name} {person.number}</p>)}
+        {persons.map(person => 
+          <p key={person.id}>
+            {person.name} {person.number}
+            <button onClick={() => toDelete(person)}>delete</button>
+          </p>
+        )}
       </>
 
   return (
@@ -102,6 +111,27 @@ const App = () => {
     setFilterPersons(persons.filter( (person) => person.name.toLowerCase().includes(event.target.value.toLowerCase())))
   }
 
+  const toDelete = (personToDelete) => {
+    
+    if (window.confirm(`Delete ${personToDelete.name}?`)) {
+      console.log(`${personToDelete.name} was deleted`)
+      
+      //prevPersons is the current state of persons before changing
+      //this is because setPersons can only modify persons
+      
+      //person.id !== personToDelete.id with the filter method, is used to create a new array that includes only the persons whose ID does not match the ID of the person to be deleted. This effectively removes the person with the matching ID from the array and also update it since updating state re renders it.
+
+      personService
+      .toDelete(personToDelete.id)
+      .then(() => {
+          setPersons(prevPersons => prevPersons.filter(person => person.id !== personToDelete.id))
+          setFilterText('')
+        }
+      )
+    } return false
+    
+  }
+
 
   return (
     <div>
@@ -115,7 +145,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <PersonsFilter filterText={filterText} persons={persons}filterPersons={filterPersons}/>
+      <PersonsFilter filterText={filterText} persons={persons}filterPersons={filterPersons} toDelete={toDelete}/>
 
     </div>
   )
