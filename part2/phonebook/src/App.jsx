@@ -73,32 +73,46 @@ const App = () => {
   
   const addPerson = (event) => {
     event.preventDefault()
-
+    //if the name already exists but the number is different/same
     if (persons.find(p => p["name"] === newName)) {
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        // I don't need id I just need the specific person
+        const findPerson = persons.find(person => person.name === newName)
+        const changedPerson = {...findPerson, number: newNum}
+
+        personService
+        .update(findPerson.id, changedPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== findPerson.id ? person : returnedPerson))
+        })
+        .catch(error => console.log(error))
+
+        setNewName('')
+        setNewNum('')
+      } // if user decided to abort cleans up the input
       setNewName('')
       setNewNum('')
       return false
-    }
 
-    const nameObject = {
-      name: newName,
-      number: newNum
+    } else {
+      const nameObject = {
+        name: newName,
+        number: newNum
+      }
+  
+      personService
+      .create(nameObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNum('')
+      })
     }
-
-    personService
-    .create(nameObject)
-    .then(returnedPerson => {
-      setPersons(persons.concat(returnedPerson))
-      setNewName('')
-      setNewNum('')
-    })
   }
 
   const handleChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value)
-
   }
 
   const handleNumChange = (event) => {
@@ -116,10 +130,8 @@ const App = () => {
     if (window.confirm(`Delete ${personToDelete.name}?`)) {
       console.log(`${personToDelete.name} was deleted`)
       
-      //prevPersons is the current state of persons before changing
-      //this is because setPersons can only modify persons
-      
-      //person.id !== personToDelete.id with the filter method, is used to create a new array that includes only the persons whose ID does not match the ID of the person to be deleted. This effectively removes the person with the matching ID from the array and also update it since updating state re renders it.
+      //prevPersons is the current state of persons before changing bc setPersons can only modify persons
+      //person.id !== personToDelete.id with the filter method, is used to create a new array that includes only the persons whose ID does not match the ID of the person to be deleted. This effectively removes the person with the matching ID from the array and also update it since updating state re-renders it.
 
       personService
       .toDelete(personToDelete.id)
@@ -128,10 +140,8 @@ const App = () => {
           setFilterText('')
         }
       )
-    } return false
-    
+    } setFilterText('')
   }
-
 
   return (
     <div>
