@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import personService from './services/persons'
+import Notification from "./components/Notification"
 
 const FilterInput = ({filterText, handleFilter}) => {
   return (
@@ -62,6 +63,7 @@ const App = () => {
   const [newNum, setNewNum] = useState('')
   const [filterText, setFilterText] = useState('')
   const [filterPersons, setFilterPersons] = useState([])
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -107,6 +109,10 @@ const App = () => {
         setNewName('')
         setNewNum('')
       })
+      .then( () => {
+        setMessage(`Added ${newName} successfully`)
+        setTimeout(() => {setMessage(null)}, 3000)
+      })
     }
   }
 
@@ -146,6 +152,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
 
       <FilterInput filterText={filterText} handleFilter={handleFilter}/>
 
