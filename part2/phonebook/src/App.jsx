@@ -87,7 +87,12 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.map(person => person.id !== findPerson.id ? person : returnedPerson))
         })
-        .catch(error => console.log(error))
+        .catch(() => {
+            setMessage(`Information of ${newName} has already been removed from server`)
+            setTimeout(() => {setMessage(null)}, 4000)
+            setPersons(prevPersons => prevPersons.filter(person => person.id !== findPerson.id))
+          }
+        )
 
         setNewName('')
         setNewNum('')
@@ -110,7 +115,7 @@ const App = () => {
         setNewNum('')
       })
       .then( () => {
-        setMessage(`Added ${newName} successfully`)
+        setMessage(`Added ${newName}`)
         setTimeout(() => {setMessage(null)}, 3000)
       })
     }
