@@ -66,11 +66,11 @@ const App = () => {
       return (false)
     } else if (filteredCountry.length <= 10) {
       return (Object.keys(filteredCountry).map(
-        keys => <p key={filteredCountry[keys].ccn3}>{filteredCountry[keys].name.common}</p>))
+        keys => <p key={filteredCountry[keys].ccn3}>
+          {filteredCountry[keys].name.common} <button onClick={() => setCountry({...filteredCountry[keys]})}>show</button>
+          </p>))
     }
   }
-
-  console.log('value of country:', country)
 
   // value={filter} bc controlled component. only display last expression when country has value (when filtered country only has one element)
   return (
