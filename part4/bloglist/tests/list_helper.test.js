@@ -89,6 +89,8 @@ describe('total likes', () => {
 describe('favorite blog', () => {
   test('find most likes', () => {
     const result = listHelper.favoriteBlog(biggerList)
-    expect(result).toBe(12)
+    expect(result.likes).toBe(12)
+    console.log(result)
   })
+
 })
