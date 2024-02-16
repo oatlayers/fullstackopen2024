@@ -20,26 +20,59 @@ const favoriteBlog = (biggerList) => {
   const mostLiked = Math.max(...likesArray)
   const findIndex = likesArray.findIndex(i => i === mostLiked)
 
-  const theObj = {
+  return {
     title: biggerList[findIndex].title,
     author: biggerList[findIndex].author,
     likes: biggerList[findIndex].likes
   }
-
-  return theObj
 }
 
 const mostBlogs = (biggerList) => {
-  const blogsArray = biggerList.map(author => author.blogs)
-  const mostBlogs = Math.max(...blogsArray)
-  const findIndex = blogsArray.findIndex(i => i === mostBlogs)
+  // obj to store author: value pair
+  const blogCountByAuthor = {}
 
-  const theObj = {
-    author: biggerList[findIndex].author,
-    blogs: biggerList[findIndex].blogs
+  // iterate for each blog if 0 (default) or not then add 1
+  biggerList.forEach(blog => {
+    const author = blog.author
+    blogCountByAuthor[author] = (blogCountByAuthor[author] || 0) + 1
+  })
+
+  // find the author with the highest number of blogs
+  const mostFrequentAuthor = Object.keys(blogCountByAuthor).reduce((a, b) => blogCountByAuthor[a] > blogCountByAuthor[b] ? a : b)
+
+  return {
+    author: mostFrequentAuthor,
+    blogs: blogCountByAuthor[mostFrequentAuthor]
+  }
+}
+
+const mostLikes = (biggerList) => {
+  // obj to store author: value pair
+  const likesByAuthor = {}
+
+  // iterate for each blog to find amount of likes; if it doesnt have a value yet use 0, if they do, use that value and then add with current likes value
+  biggerList.forEach(blog => {
+    const author = blog.author
+    const likes = blog.likes
+
+    likesByAuthor[author] = (likesByAuthor[author] || 0) + likes
+  })
+
+  // find author with the most likes, start with -1 to ensure any likes count is greater
+  let mostLikesAuthor
+  let maxLikes = -1
+
+  for (const author in likesByAuthor) {
+    if (likesByAuthor[author] > maxLikes) {
+      maxLikes = likesByAuthor[author]
+      mostLikesAuthor = author
+    }
   }
 
-  return theObj
+  return {
+    author: mostLikesAuthor,
+    likes: maxLikes
+  }
 }
 
 module.exports = {
@@ -47,5 +80,6 @@ module.exports = {
   totalLikes,
   bigTotalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
