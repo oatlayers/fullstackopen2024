@@ -1,4 +1,9 @@
+const supertest = require('supertest')
+const mongoose = require('mongoose')
+
 const listHelper = require('../utils/list_helper')
+const app = require('../app')
+const api = supertest(app)
 
 const listWithOneBlog = [
   {
@@ -104,4 +109,15 @@ describe('favorite blog', () => {
     expect(result.likes).toBe(17)
     console.log(result)
   })
+})
+
+test('notes are returned as json', async () => {
+  await api
+    .get('/api/blogs')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+})
+
+afterAll(async () => {
+  await mongoose.connection.close()
 })
