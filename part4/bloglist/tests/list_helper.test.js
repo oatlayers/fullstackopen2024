@@ -111,11 +111,48 @@ describe('favorite blog', () => {
   })
 })
 
-test('notes are returned as json', async () => {
+test('returns the correct amount of blog posts in the JSON format', async () => {
+  const response = await api.get('/api/blogs')
   await api
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
+  expect(response.body.length).toBe(6)
+})
+
+test('verifies the unique identifier property is named id', async () => {
+  const response = await api.get('/api/blogs')
+  for (const item of response.body) {
+    expect(item.id).toBeDefined()
+  }
+})
+
+test('verifies post request is successful', async () => {
+  const newBlog = {
+    title: 'Test Blog Test Blog',
+    author: 'Me',
+    url: 'https://oatlayers.com/',
+    likes: 69
+  }
+
+  const initialResponse = await api.get('/api/blogs')
+  const initialLength = initialResponse.body.length
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const updatedResponse = await api.get('/api/blogs')
+  const updatedLength = updatedResponse.body.length
+
+  expect(updatedLength).toBe(initialLength + 1)
+
+  const blogsTitle = updatedResponse.body.map(b => b.title)
+  expect(blogsTitle).toContain(
+    'Test Blog Test Blog'
+  )
 })
 
 afterAll(async () => {
