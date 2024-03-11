@@ -81,5 +81,5 @@ module.exports = {
   bigTotalLikes,
   favoriteBlog,
   mostBlogs,
-  mostLikes
+  mostLikes,
 }

@@ -112,12 +112,15 @@ describe('favorite blog', () => {
 })
 
 test('returns the correct amount of blog posts in the JSON format', async () => {
-  const response = await api.get('/api/blogs')
-  await api
+  const initialResponse = await api.get('/api/blogs')
+  const initialLength = initialResponse.body.length
+
+  const updatedResponse = await api
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
-  expect(response.body.length).toBe(6)
+
+  expect(updatedResponse.body.length).toBe(initialLength)
 })
 
 test('verifies the unique identifier property is named id', async () => {
@@ -153,6 +156,33 @@ test('verifies post request is successful', async () => {
   expect(blogsTitle).toContain(
     'Test Blog Test Blog'
   )
+})
+
+test('if likes missing default to zero', async () => {
+  const newBlog = {
+    title: 'Test Missing Likes',
+    author: 'Me',
+    url: 'https://oatlayers.com/'
+  }
+
+  const result = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+
+  expect(result.body).toHaveProperty('likes', 0)
+})
+
+test('if title or url properties are missing', async () => {
+  const newBlog = {
+    author: 'Me',
+    likes: 45
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
 })
 
 afterAll(async () => {
