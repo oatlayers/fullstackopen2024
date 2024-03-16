@@ -8,6 +8,7 @@ app.use(cors())
 app.use(express.json())
 
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
 
 const config = require('./utils/config')
 const logger = require('./utils/logger')
@@ -15,7 +16,8 @@ const middleware = require('./utils/middleware')
 
 app.use(middleware.requestLogger)
 
-app.use('/', blogsRouter)
+app.use('/api/blogs', blogsRouter)
+app.use('/api/users', usersRouter)
 
 logger.info('connecting to', config.MONGODB_URI)
 

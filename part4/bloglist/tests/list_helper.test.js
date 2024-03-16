@@ -2,6 +2,7 @@ const supertest = require('supertest')
 const mongoose = require('mongoose')
 
 const listHelper = require('../utils/list_helper')
+const Blog = require('../models/blog')
 const app = require('../app')
 const api = supertest(app)
 
@@ -66,6 +67,11 @@ const biggerList = [
     __v: 0
   }
 ]
+
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  await Blog.insertMany(listHelper.initialBlogs)
+})
 
 test('dummy returns one', () => {
   const blogs = []
@@ -183,6 +189,36 @@ test('if title or url properties are missing', async () => {
     .post('/api/blogs')
     .send(newBlog)
     .expect(400)
+})
+
+describe ('creating users', () => {
+  test('invalid username and password length are not created', async () => {
+    const newUser = {
+      username: 'yy',
+      password: 'ww'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    expect(result.body.error).toContain('both username and password must be at least 3 characters in length')
+  })
+
+  test('username must be unique', async () => {
+    const newUser = {
+      username: 'oatlayers1',
+      password: '123456789'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    expect(result.body.error).toContain('unique')
+  })
 })
 
 afterAll(async () => {
