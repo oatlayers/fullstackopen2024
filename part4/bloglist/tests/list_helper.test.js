@@ -138,8 +138,8 @@ test('verifies the unique identifier property is named id', async () => {
 
 test('verifies post request is successful', async () => {
   const newBlog = {
-    title: 'Test Blog Test Blog',
-    author: 'Me',
+    title: 'Test POST request blog',
+    author: 'oatlayers',
     url: 'https://oatlayers.com/',
     likes: 69
   }
@@ -160,7 +160,7 @@ test('verifies post request is successful', async () => {
 
   const blogsTitle = updatedResponse.body.map(b => b.title)
   expect(blogsTitle).toContain(
-    'Test Blog Test Blog'
+    'POST'
   )
 })
 
