@@ -137,6 +137,16 @@ test('verifies the unique identifier property is named id', async () => {
 })
 
 test('verifies post request is successful', async () => {
+  const toLogin = {
+    'username': 'oatlayers1',
+    'password': '123456789'
+  }
+
+  const res = await api
+    .post('/api/login')
+    .send(toLogin)
+    .expect(200)
+
   const newBlog = {
     title: 'Test POST request blog',
     author: 'oatlayers',
@@ -149,6 +159,7 @@ test('verifies post request is successful', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${res.body.token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -160,11 +171,21 @@ test('verifies post request is successful', async () => {
 
   const blogsTitle = updatedResponse.body.map(b => b.title)
   expect(blogsTitle).toContain(
-    'POST'
+    'Test POST request blog'
   )
 })
 
 test('if likes missing default to zero', async () => {
+  const toLogin = {
+    'username': 'oatlayers1',
+    'password': '123456789'
+  }
+
+  const res = await api
+    .post('/api/login')
+    .send(toLogin)
+    .expect(200)
+
   const newBlog = {
     title: 'Test Missing Likes',
     author: 'Me',
@@ -173,6 +194,7 @@ test('if likes missing default to zero', async () => {
 
   const result = await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${res.body.token}`)
     .send(newBlog)
     .expect(201)
 
