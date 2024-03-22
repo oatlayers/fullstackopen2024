@@ -101,7 +101,8 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
 
-      {user === null ?
+      {
+      user === null ?
         <Loginform
         handleLogin={handleLogin}
         username={username}
@@ -123,7 +124,7 @@ const App = () => {
           />
         </div>
       }
-
+      
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all' }
