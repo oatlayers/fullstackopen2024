@@ -1,33 +1,63 @@
-const LoginForm = ({ handleLogin, username, password, setUsername, setPassword }) => {
+import { useState } from "react"
+
+const LoginForm = ({ createLogin }) => {
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+
+    const handleLogin = (event) => {
+        event.preventDefault()
+        createLogin({
+            username, password
+        })
+        setUsername('')
+        setPassword('')
+    }
+
     return (
         <form onSubmit={handleLogin}>
-            <h2>log in to application</h2>
-            <div>
-            username
-                <input
-                type="text"
-                value={username}
-                name="Username"
-                onChange={({ target }) => setUsername(target.value)}
-                />
-            </div>
-            <div>
-            password
-                <input
-                type="password"
-                value={password}
-                name="Password"
-                onChange={({ target }) => setPassword(target.value)}
-                />
-            </div>
-            <button type="submit">login</button>
+        <h2>log in to application</h2>
+        <div>
+          username
+            <input
+            type = "text"
+            value = {username}
+            name = "Username"
+            onChange={({ target }) => setUsername(target.value)}
+            />
+        </div>
+        <div>
+          password
+            <input
+            type = "password"
+            value = {password}
+            name = "Password"
+            onChange = {({ target }) => setPassword(target.value)}
+            />
+        </div>
+        <button type="submit">login</button>
         </form>
     )
 }
 
-const NewBlogForm = ({ handleSubmit, setTitle, setAuthor, setUrl, title, author, url }) => {
+const NewBlogForm = ({ createBlog }) => {
+    const [title, setTitle] = useState('')
+    const [author, setAuthor] = useState('')
+    const [url, setUrl] = useState('')
+
+    const addBlog = (event) => {
+        event.preventDefault()
+        createBlog({
+            title: title,
+            author: author,
+            url: url
+        })
+        setTitle('')
+        setAuthor('')
+        setUrl('')
+    }
+
     return (
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={addBlog}>
         <h2>create new</h2>
         <div>title: 
             <input 

@@ -1,19 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
-import {LoginForm, NewBlogForm} from './components/Form'
+import { LoginForm, NewBlogForm } from './components/Form'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -30,82 +27,66 @@ const App = () => {
     }
   },[])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    
+  const handleLogin = async (loginObject) => {
     try {
-      const user = await loginService.login({
-        username, password
-      })
-
-      window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
-      )
+      const user = await loginService.login(loginObject)
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
     } catch (exception) {
-      setErrorMessage('wrong username or password')
+      setErrorMessage('Wrong credentials')
+      console.log('error:', exception)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
     }
   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-
+  const handleSubmit = async (blogObject) => {
     try {
-      const blogObject = {
-        title: title,
-        author: author,
-        url: url
-      }
-
+      blogFormRef.current.toggleVisibility()
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
       setErrorMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
     } catch (error) {
       console.error(error)
     }
   }
 
+  const handleLike = async (newLike, noteId) => {
+    try {
+      await blogService.update(newLike, noteId)
+
+    } catch (error) {
+      console.error(error)
+      console.log('noteId from handlelike:', noteId)
+      console.log('typeof noteId', typeof noteId)
+    }
+  }
+
   return (
     <div>
+      <h1>Blogs</h1>
       <Notification message={errorMessage}/>
 
       {
         user === null ? 
-        <LoginForm 
-        handleLogin={handleLogin}
-        username={username}
-        password={password}
-        setUsername={setUsername}
-        setPassword={setPassword}
-        />
+        <Togglable buttonLabel="login">
+          <LoginForm createLogin={handleLogin} />
+        </Togglable>
         :
         <div>
           <h2>blogs</h2>
           {user.name} logged in
           <button onClick={() => {window.localStorage.removeItem('loggedNoteappUser'); setUser(null)}}>logout</button>
- 
-          <NewBlogForm 
-          handleSubmit={handleSubmit}
-          setTitle={setTitle}
-          setAuthor={setAuthor}
-          setUrl={setUrl}
-          title={title}
-          author={author}
-          url={url}
-          />
-          {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <NewBlogForm createBlog={handleSubmit} />
+          </Togglable>
+          {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} noteId={blog.id}/>)}
         </div>
       }
 
