@@ -12,9 +12,12 @@ const App = () => {
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
 
+  // i set it to sort the array only when reload since
+  // the exercise doesnt specify i had to do it once button is clicked
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+    blogService.getAll().then(blogs => {
+      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(sortedBlogs)}
     )  
   }, [])
 
@@ -56,17 +59,33 @@ const App = () => {
     }
   }
 
-  const handleLike = async (newLike, noteId) => {
+  const handleLike = async (id, newLike) => {
     try {
-      await blogService.update(newLike, noteId)
-
+      const returnedBlog = await blogService.update(id, newLike)
+      // if state of blogs isn't updated it wont render like changes
+      setBlogs(prevBlogs =>
+        prevBlogs.map(blog =>
+          blog.id === id ? returnedBlog : blog
+        )
+      )
     } catch (error) {
       console.error(error)
-      console.log('noteId from handlelike:', noteId)
-      console.log('typeof noteId', typeof noteId)
     }
   }
 
+  const handleRemove = async (id) => {
+    try {
+      const returnedBlog = await blogService.getId(id)
+      console.log(returnedBlog.title, returnedBlog.author)
+      if (window.confirm(`Remove blog ${returnedBlog.title} by ${returnedBlog.author}?`)) {
+        await blogService.remove(id)
+        setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== id))
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  
   return (
     <div>
       <h1>Blogs</h1>
@@ -86,7 +105,7 @@ const App = () => {
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
             <NewBlogForm createBlog={handleSubmit} />
           </Togglable>
-          {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} noteId={blog.id}/>)}
+          {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} id={blog.id} handleRemove={handleRemove}/>)}
         </div>
       }
 
