@@ -33,7 +33,7 @@ const App = () => {
 
   const toggleImportanceOf = id => {
     const note = notes.find(n => n.id === id)
-    const changedNote = {...note, important: !note.important}
+    const changedNote = { ...note, important: !note.important }
 
     noteService
       .update(id, changedNote)
@@ -71,10 +71,10 @@ const App = () => {
       }, 5000)
     }
   }
-  
+
   const notesToShow = showAll
-  ? notes
-  : notes.filter(note => note.important === true)
+    ? notes
+    : notes.filter(note => note.important === true)
 
   return (
     <div>
@@ -82,20 +82,20 @@ const App = () => {
       <Notification message={errorMessage} />
 
       { user === null ?
-      <Togglable buttonLabel='login'>
-        <LoginForm createLogin={handleLogin} />  
-      </Togglable>
-      :
-      <div>
-        {user.name} logged in
-        <button onClick={() => {window.localStorage.removeItem('loggedNoteappUser'); setUser(null)}}>logout</button>
-        
-        <Togglable buttonLabel="new note" ref={noteFormRef}>
-          <NoteForm createNote={addNote} />
+        <Togglable buttonLabel='login'>
+          <LoginForm createLogin={handleLogin} />
         </Togglable>
-      </div>
+        :
+        <div>
+          {user.name} logged in
+          <button onClick={() => {window.localStorage.removeItem('loggedNoteappUser'); setUser(null)}}>logout</button>
+
+          <Togglable buttonLabel="new note" ref={noteFormRef}>
+            <NoteForm createNote={addNote} />
+          </Togglable>
+        </div>
       }
-      
+
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all' }
@@ -103,8 +103,8 @@ const App = () => {
       </div>
       <ul>
         {notesToShow.map(note =>
-          <Note key={note.id} note={note} 
-          toggleImportance={() => toggleImportanceOf(note.id)} />
+          <Note key={note.id} note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)} />
         )}
       </ul>
       <Footer />

@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-const Blog = ({ blog, handleLike, id, handleRemove }) => {
+const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
   const [visible, setVisible] = useState(false)
-  const hideWhenVisible = { display: visible ? 'none' : ''}
-  const showWhenVisible = { display: visible ? '' : 'none'}
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
   const toggleVisibility = () => { setVisible(!visible) }
 
@@ -26,8 +26,12 @@ const Blog = ({ blog, handleLike, id, handleRemove }) => {
     handleLike(id, newLike)
   }
 
-  const toRemove = () => {
-    handleRemove(id)
+  const toggleRemove = () => {
+    if (blog.user.name === user) {
+      return (
+        <button onClick={() => handleRemove(id)}>remove</button>
+      )
+    }
   }
 
   return (
@@ -37,9 +41,9 @@ const Blog = ({ blog, handleLike, id, handleRemove }) => {
       </div>
       <div style={showWhenVisible}>
         {blog.title} <button onClick={toggleVisibility}>hide</button> <br/>
-        {blog.url} <br/>
+        <a href={blog.url}>{blog.url}</a> <br/>
         {blog.likes} <button onClick={addLike}>like</button> <br/>
-        {blog.author} <br/> <button onClick={toRemove}>remove</button>
+        {blog.author} <br/> {toggleRemove()}
       </div>
     </div>
   )

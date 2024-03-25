@@ -3,7 +3,8 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
-import { LoginForm, NewBlogForm } from './components/Form'
+import { NewBlogForm } from './components/NewBlogForm'
+import { LoginForm } from './components/LoginForm'
 import Togglable from './components/Togglable'
 
 const App = () => {
@@ -16,9 +17,9 @@ const App = () => {
   // the exercise doesnt specify i had to do it once button is clicked
   useEffect(() => {
     blogService.getAll().then(blogs => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
       setBlogs(sortedBlogs)}
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -85,28 +86,28 @@ const App = () => {
       console.error(error)
     }
   }
-  
+
   return (
     <div>
       <h1>Blogs</h1>
       <Notification message={errorMessage}/>
 
       {
-        user === null ? 
-        <Togglable buttonLabel="login">
-          <LoginForm createLogin={handleLogin} />
-        </Togglable>
-        :
-        <div>
-          <h2>blogs</h2>
-          {user.name} logged in
-          <button onClick={() => {window.localStorage.removeItem('loggedNoteappUser'); setUser(null)}}>logout</button>
-
-          <Togglable buttonLabel="new blog" ref={blogFormRef}>
-            <NewBlogForm createBlog={handleSubmit} />
+        user === null ?
+          <Togglable buttonLabel="login">
+            <LoginForm createLogin={handleLogin} />
           </Togglable>
-          {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} id={blog.id} handleRemove={handleRemove}/>)}
-        </div>
+          :
+          <div>
+            <h2>blogs</h2>
+            {user.name} logged in
+            <button onClick={() => {window.localStorage.removeItem('loggedNoteappUser'); setUser(null)}}>logout</button>
+
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+              <NewBlogForm createBlog={handleSubmit} />
+            </Togglable>
+            {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} id={blog.id} handleRemove={handleRemove} user={user.name}/>)}
+          </div>
       }
 
     </div>
