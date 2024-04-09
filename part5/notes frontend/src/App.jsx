@@ -4,7 +4,8 @@ import Notification from './components/Notification'
 import Footer from './components/Footer'
 import noteService from './services/notes'
 import loginService from './services/login'
-import { LoginForm, NoteForm } from './components/Form'
+import LoginForm from './components/LoginForm'
+import NoteForm from './components/NoteForm'
 import Togglable from './components/Togglable'
 
 const App = () => {
