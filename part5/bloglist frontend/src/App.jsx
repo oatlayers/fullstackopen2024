@@ -29,7 +29,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
-  },[])
+  }, [])
 
   const handleLogin = async (loginObject) => {
     try {
@@ -77,7 +77,6 @@ const App = () => {
   const handleRemove = async (id) => {
     try {
       const returnedBlog = await blogService.getId(id)
-      console.log(returnedBlog.title, returnedBlog.author)
       if (window.confirm(`Remove blog ${returnedBlog.title} by ${returnedBlog.author}?`)) {
         await blogService.remove(id)
         setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== id))
@@ -92,24 +91,22 @@ const App = () => {
       <h1>Blogs</h1>
       <Notification message={errorMessage}/>
 
-      {
-        user === null ?
-          <Togglable buttonLabel="login">
-            <LoginForm createLogin={handleLogin} />
+      {user === null ?
+        <Togglable buttonLabel="login">
+          <LoginForm createLogin={handleLogin} />
+        </Togglable>
+        :
+        <div>
+          <h2>blogs</h2>
+          {user.name} logged in
+          <button onClick={() => {window.localStorage.removeItem('loggedNoteappUser'); setUser(null)}}>logout</button>
+
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <NewBlogForm createBlog={handleSubmit} />
           </Togglable>
-          :
-          <div>
-            <h2>blogs</h2>
-            {user.name} logged in
-            <button onClick={() => {window.localStorage.removeItem('loggedNoteappUser'); setUser(null)}}>logout</button>
 
-            <Togglable buttonLabel="new blog" ref={blogFormRef}>
-              <NewBlogForm createBlog={handleSubmit} />
-            </Togglable>
-            {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} id={blog.id} handleRemove={handleRemove} user={user.name}/>)}
-          </div>
-      }
-
+          {blogs.map(blog => <Blog key={blog.id} blog={blog} handleLike={handleLike} id={blog.id} handleRemove={handleRemove} user={user.name}/>)}
+        </div>}
     </div>
   )
 }
