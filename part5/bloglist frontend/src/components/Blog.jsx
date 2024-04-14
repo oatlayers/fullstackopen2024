@@ -2,8 +2,8 @@ import { useState } from 'react'
 
 const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
   const [visible, setVisible] = useState(false)
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
+  const hideWhenVisible = { display: visible ? 'none' : 'block' }
+  const showWhenVisible = { display: visible ? 'block' : 'none' }
 
   const toggleVisibility = () => { setVisible(!visible) }
 
@@ -36,9 +36,10 @@ const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
 
   return (
     <div style={blogStyle}>
+
       <div id='title-author' style={hideWhenVisible}>
         {blog.title} {blog.author}
-        <button id='show-button' onClick={toggleVisibility}>
+        <button id='view-button' onClick={toggleVisibility}>
           view
         </button>
       </div>
@@ -49,13 +50,14 @@ const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
           hide
           </button>
         </div>
-        <a id='url' href={blog.url}>{blog.url}</a>
+        <a href={blog.url}>{blog.url}</a>
         <div id='likes'>{blog.likes}
-          <button onClick={addLike}>like</button>
+          <button id='likes-button' onClick={addLike}>like</button>
         </div>
-        <div id='author'>{blog.author}</div>
+        <div>{blog.author}</div>
         {toggleRemove()}
       </div>
+
     </div>
   )
 }

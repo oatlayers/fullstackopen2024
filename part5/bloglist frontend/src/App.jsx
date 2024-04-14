@@ -3,7 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
-import { NewBlogForm } from './components/NewBlogForm'
+import NewBlogForm from './components/NewBlogForm'
 import { LoginForm } from './components/LoginForm'
 import Togglable from './components/Togglable'
 
@@ -63,7 +63,7 @@ const App = () => {
   const handleLike = async (id, newLike) => {
     try {
       const returnedBlog = await blogService.update(id, newLike)
-      // if state of blogs isn't updated it wont render like changes
+      // state of blogs needs to be updated, otherwise it won't render like changes
       setBlogs(prevBlogs =>
         prevBlogs.map(blog =>
           blog.id === id ? returnedBlog : blog
