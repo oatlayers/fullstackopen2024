@@ -12,7 +12,7 @@ describe('Note app', () => {
       }
     })
 
-    await page.goto('/')
+    await page.goto('')
   })
 
   test('front page can be opened', async ({ page }) => {
@@ -21,30 +21,27 @@ describe('Note app', () => {
     await expect(page.getByText('Note app, Department of Computer Science, University of Helsinki 2024')).toBeVisible()
   })
 
-  test('user can login', async ({ page }) => {
+  test('user can login with correct credentials', async ({ page }) => {
     await loginWith(page, 'oatlayers2', '123456')
+  
     await expect(page.getByText('oatlayers2 logged in')).toBeVisible()
   })
 
   test('login fails with wrong password', async ({ page }) => {
-    await page.getByRole('button', { name: 'login' }).click()
-    await page.getByTestId('username').fill('oatlayers5')
-    await page.getByTestId('password').fill('wrong')
-    await page.getByRole('button', { name: 'login' }).click()
+    await loginWith(page, 'oatlayers5', 'wrong')
 
     const errorDiv = await page.locator('.error')
     await expect(errorDiv).toContainText('wrong credentials')
     await expect(errorDiv).toHaveCSS('border-style', 'solid')
-    await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0')
-
+    await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
     await expect(page.getByText('oatlayers5 logged in')).not.toBeVisible()
-  })
+  })  
 
   describe('when logged in', () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, 'oatlayers2', '123456')
     })
-  
+
     test('a new note can be created', async ({ page }) => {
       await createNote(page, 'a note created by playwright', true)
       await expect(page.getByText('a note created by playwright')).toBeVisible()
@@ -52,12 +49,18 @@ describe('Note app', () => {
 
     describe('and a note exists', () => {
       beforeEach(async ({ page }) => {
-        await createNote(page, 'another note by playwright', true)
+        await createNote(page, 'first note', true)
+        await createNote(page, 'second note', true)
+        await createNote(page, 'third note', true)
       })
   
       test('importance can be changed', async ({ page }) => {
-        await page.getByRole('button', { name: 'make not important' }).click()
-        await expect(page.getByText('make important')).toBeVisible()
+        await page.pause()
+        const otherNoteText = await page.getByText('second note')
+        const otherNoteElement = await otherNoteText.locator('..')
+      
+        await otherNoteElement.getByRole('button', { name: 'make not important' }).click()
+        await expect(otherNoteElement.getByText('make important')).toBeVisible()
       })
     })
   })
