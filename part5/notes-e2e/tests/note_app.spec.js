@@ -12,7 +12,7 @@ describe('Note app', () => {
       }
     })
 
-    await page.goto('')
+    await page.goto('/')
   })
 
   test('front page can be opened', async ({ page }) => {
@@ -31,7 +31,7 @@ describe('Note app', () => {
     await loginWith(page, 'oatlayers5', 'wrong')
 
     const errorDiv = await page.locator('.error')
-    await expect(errorDiv).toContainText('wrong credentials')
+    await expect(errorDiv).toContainText('Wrong credentials')
     await expect(errorDiv).toHaveCSS('border-style', 'solid')
     await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
     await expect(page.getByText('oatlayers5 logged in')).not.toBeVisible()
