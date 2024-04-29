@@ -52,7 +52,7 @@ const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
         </div>
         <a href={blog.url}>{blog.url}</a>
         <div id='likes'>{blog.likes}
-          <button id='likes-button' onClick={addLike}>like</button>
+          <button data-testid='likes' id='likes-button' onClick={addLike}>like</button>
         </div>
         <div data-testid='blog-author'>{blog.author}</div>
         {toggleRemove()}
