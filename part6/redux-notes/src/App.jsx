@@ -1,5 +1,3 @@
-import { createNote, toggleImportanceOf } from './reducers/noteReducer'
-import { useSelector, useDispatch } from 'react-redux'
 import Notes from './components/Notes'
 import NewNote from './components/NewNote'
 

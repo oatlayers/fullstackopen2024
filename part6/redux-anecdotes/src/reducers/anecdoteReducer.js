@@ -19,11 +19,47 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
+const anecdoteReducer = (state = initialState, action) => {
+  console.log('current state: ', state)
+  console.log('action:', action)
 
-  return state
+  switch (action.type) {
+    case 'TOGGLE_VOTE': {
+      const id = action.payload.id
+      const anecdoteToChange = state.find(a => a.id === id)
+      const changedAnecdote = {
+        ...anecdoteToChange,
+        votes: anecdoteToChange.votes + 1
+      }
+      return state.map(
+        anecdote => anecdote.id !== id ? anecdote : changedAnecdote
+      )
+    }
+    case 'NEW_ANECDOTE': {
+      return [...state, action.payload]
+    }
+    default:
+      return state
+  }
 }
 
-export default reducer
+export const toggleVote = (id) => {
+  console.log('anecdote to be changed with id:', id)
+  return {
+    type: 'TOGGLE_VOTE',
+    payload: { id }
+  }
+}
+
+export const createAnecdote = (anecdote) => {
+  return {
+    type: 'NEW_ANECDOTE',
+    payload: {
+      content: anecdote,
+      id: getId(),
+      votes: 0
+    }
+  }
+}
+
+export default anecdoteReducer
