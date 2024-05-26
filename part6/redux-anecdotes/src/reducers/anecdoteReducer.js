@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit"
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -19,44 +21,25 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const anecdoteReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'TOGGLE_VOTE': {
+const anecdoteSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    toggleVote(state, action) {
       const id = action.payload.id
       const anecdoteToChange = state.find(a => a.id === id)
-      const changedAnecdote = {
-        ...anecdoteToChange,
-        votes: anecdoteToChange.votes + 1
+      if (anecdoteToChange) {
+        anecdoteToChange.votes += 1
       }
-      return state.map(
-        anecdote => anecdote.id !== id ? anecdote : changedAnecdote
-      )
-    }
-    case 'NEW_ANECDOTE': {
-      return [...state, action.payload]
-    }
-    default:
-      return state
-  }
-}
-
-export const toggleVote = (id) => {
-  console.log('anecdote to be changed with id:', id)
-  return {
-    type: 'TOGGLE_VOTE',
-    payload: { id }
-  }
-}
-
-export const createAnecdote = (anecdote) => {
-  return {
-    type: 'NEW_ANECDOTE',
-    payload: {
-      content: anecdote,
-      id: getId(),
-      votes: 0
+    },
+    newAnecdote(state, action) {
+      state.push(action.payload)
+    },
+    setNotification(state, action) {
+      state.notification = action.payload.content
     }
   }
-}
+})
 
-export default anecdoteReducer
+export const { toggleVote, newAnecdote, setNotification } = anecdoteSlice.actions
+export default anecdoteSlice.reducer
