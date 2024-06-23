@@ -34,9 +34,6 @@ const anecdoteSlice = createSlice({
     },
     newAnecdote(state, action) {
       state.push(action.payload)
-    },
-    setNotification(state, action) {
-      state.notification = action.payload.content
     }
   }
 })
