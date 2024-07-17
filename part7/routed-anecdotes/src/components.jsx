@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
+import { useField } from './hooks'
 
 export const Anecdote = ({ anecdote }) => {
   return (
@@ -45,42 +45,49 @@ export const Footer = () => (
     </div>
   )
 
-  export const CreateNew = ({addNew, setNotification}) => {
-    const [content, setContent] = useState('')
-    const [author, setAuthor] = useState('')
-    const [info, setInfo] = useState('')
-  
-    const navigate = useNavigate()
-  
-    const handleSubmit = (e) => {
-      e.preventDefault()
-      addNew({
-        content,
-        author,
-        info,
-        votes: 0
-      })
-      navigate('/anecdotes')
-    }
-  
-    return (
-      <div>
-        <h2>create a new anecdote</h2>
-        <form onSubmit={handleSubmit}>
-          <div>
-            content
-            <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
-          </div>
-          <div>
-            author
-            <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
-          </div>
-          <div>
-            url for more info
-            <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
-          </div>
-          <button>create</button>
-        </form>
-      </div>
-    )
+export const CreateNew = ({ addNew }) => {
+  const { reset: resetContent, ...content} = useField('text')
+  const { reset: resetAuthor, ...author} = useField('text')
+  const { reset: resetInfo, ...info } = useField('text')
+
+  const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    addNew({
+      content: content.value,
+      author: author.value,
+      info: info.value,
+      votes: 0
+    })
+    navigate('/anecdotes')
   }
+
+  const handleReset = () => {
+    resetContent()
+    resetAuthor()
+    resetInfo()
+  }
+
+  return (
+    <div>
+      <h2>create a new anecdote</h2>
+      <form id="myform" onSubmit={handleSubmit}>
+        <div>
+          content
+          <input name='content' {...content} />
+        </div>
+        <div>
+          author
+          <input name='author' {...author} />
+        </div>
+        <div>
+          url for more info
+          <input name='info' {...info} />
+        </div>
+        <button>create</button>
+        <input type="button" onClick={handleReset} value="reset"/>
+      </form>
+    </div>
+  )
+}
