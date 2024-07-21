@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import Country from './components/Country'
 import { useField, useCountry } from './hooks'
+import Country from './components/Country'
 
 const App = () => {
   const nameInput = useField('text')
