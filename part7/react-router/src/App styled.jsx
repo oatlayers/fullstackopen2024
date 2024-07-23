@@ -1,21 +1,5 @@
-import ReactDOM from 'react-dom/client'
 import { useState } from 'react'
-
-import {
-  Container,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Paper,
-  TextField,
-  Button,
-  AppBar,
-  Toolbar,
-  Alert
-} from '@mui/material'
-
+import styled from 'styled-components'
 
 import {
   BrowserRouter as Router,
@@ -27,6 +11,34 @@ import {
   useMatch
 } from "react-router-dom"
 
+const Button = styled.button`
+  background: Bisque;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid Chocolate;
+  border-radius: 3px;
+`
+
+const Input = styled.input`
+  margin: 0.25em;
+`
+
+const Page = styled.div`
+  padding: 1em;
+  background: papayawhip;
+`
+
+const Navigation = styled.div`
+  background: BurlyWood;
+  padding: 1em;
+`
+
+const Footer = styled.div`
+  background: Chocolate;
+  padding: 1em;
+  margin-top: 1em;
+`
 
 const Home = () => (
   <div>
@@ -36,7 +48,6 @@ const Home = () => (
 )
 
 const Note = ({ note }) => {
-
   return (
     <div>
       <h2>{note.content}</h2>
@@ -49,23 +60,22 @@ const Note = ({ note }) => {
 const Notes = ({ notes }) => (
   <div>
     <h2>Notes</h2>
-
-    <TableContainer component={Paper}>
-      <Table>
-        <TableBody>
-          {notes.map(note => (
-            <TableRow key={note.id}>
-              <TableCell>
-                <Link to={`/notes/${note.id}`}>{note.content}</Link>
-              </TableCell>
-              <TableCell>
-                {note.name}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Table striped>
+      <tbody>
+        {notes.map(note =>
+          <tr key={note.id}>
+            <td>
+              <Link to={`/notes/${note.id}`}>
+                {note.content}
+              </Link>
+            </td>
+            <td>
+              {note.user}
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
   </div>
 )
 
@@ -94,16 +104,17 @@ const Login = (props) => {
       <h2>login</h2>
       <form onSubmit={onSubmit}>
         <div>
-          <TextField label="username" />
+          username:
+
+          <Input />
         </div>
         <div>
-          <TextField label="password" type='password' />
+          password:
+
+          <Input type='password' />
         </div>
-        <div>
-          <Button variant="contained" color="primary" type="submit">
-            login
-          </Button>
-        </div>
+
+        <Button type="submit" primary=''>login</Button>
       </form>
     </div>
   )
@@ -151,49 +162,35 @@ const App = () => {
   const padding = {
     padding: 5
   }
-
+  
   return (
-    <Container>
-      <div>
-        {(message &&
-          <Alert severity="success">
-            {message}
-          </Alert>
-        )}
-      </div>
-      <AppBar position="static">
-        <Toolbar>
-          <Button color="inherit" component={Link} to="/">
-            home
-          </Button>
-          <Button color="inherit" component={Link} to="/notes">
-            notes
-          </Button>
-          <Button color="inherit" component={Link} to="/users">
-            users
-          </Button>
-          {user
-            ? <em>{user} logged in</em>
-            : <Button color="inherit" component={Link} to="/login">
-              login
-            </Button>
-          }
-        </Toolbar>
-      </AppBar>
+      <Page>
+      <Navigation>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/notes">notes</Link>
+        <Link style={padding} to="/users">users</Link>
+        {user
+          ? <em>{user} logged in</em>
+          : <Link style={padding} to="/login">login</Link>
+        }
 
+      </Navigation>
+      
       <Routes>
-        <Route path="/notes/:id" element={<Note note={note} />} />
-        <Route path="/notes" element={<Notes notes={notes} />} />
+        <Route path="/notes/:id" element={<Note note={note} />} />  
+        <Route path="/notes" element={<Notes notes={notes} />} />   
         <Route path="/users" element={user ? <Users /> : <Navigate replace to="/login" />} />
         <Route path="/login" element={<Login onLogin={login} />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />      
       </Routes>
-      <div>
-        <br />
+
+
+      <Footer>
         <em>Note app, Department of Computer Science 2022</em>
-      </div>
-    </Container>
+
+      </Footer>
+    </Page>
   )
 }
 
-// export default App
+export default App

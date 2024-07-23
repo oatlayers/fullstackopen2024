@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App materialui.jsx'
+import App from './App styled.jsx'
 import './index.css'
 import { BrowserRouter as Router } from "react-router-dom";
 
