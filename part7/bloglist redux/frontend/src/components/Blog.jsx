@@ -19,10 +19,7 @@ const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
 
   const addLike = () => {
     const newLike = {
-      user: blog.user.id,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url,
+      ...blog,
       likes: blog.likes + 1,
     }
     handleLike(id, newLike)

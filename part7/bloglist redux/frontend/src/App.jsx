@@ -1,62 +1,57 @@
 import { useState, useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
 import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/Notification'
-import NewBlogForm from './components/NewBlogForm'
-import { LoginForm } from './components/LoginForm'
+import { LoginForm, NewBlogForm } from './components/Form'
 import Togglable from './components/Togglable'
 
+import service from './services/service'
+import { changeNotification } from './reducers/notificationSlice'
+import { createBlog, fetchBlogs } from './reducers/blogSlice'
+
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
+  const blogs = useSelector((state) => state.blogs)
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
+  const dispatch = useDispatch()
 
-  // i set it to sort the array only when reload since
-  // the exercise doesnt specify i had to do it once button is clicked
+  // initial fetch and sort of all blogs
   useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
-      setBlogs(sortedBlogs)
-    })
-  }, [])
+    dispatch(fetchBlogs())
+  }, [dispatch])
 
+  // prevent logout when reload
   useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem('loggedNoteappUser')
+    const loggedUserJson = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson)
       setUser(user)
-      blogService.setToken(user.token)
+      service.setToken(user.token)
     }
   }, [])
 
   const handleLogin = async (loginObject) => {
     try {
-      const user = await loginService.login(loginObject)
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
+      const user = await service.login(loginObject)
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      service.setToken(user.token)
       setUser(user)
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
-      console.log('error:', exception)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      dispatch(changeNotification('Wrong credentials', 5))
     }
   }
 
   const handleSubmit = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
-      const returnedBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(returnedBlog))
-      setErrorMessage(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+      const returnedBlog = await service.create(blogObject)
+      dispatch(createBlog(returnedBlog))
+      dispatch(
+        changeNotification(
+          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+        )
       )
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
     } catch (error) {
       console.error(error)
     }
@@ -64,8 +59,7 @@ const App = () => {
 
   const handleLike = async (id, newLike) => {
     try {
-      const returnedBlog = await blogService.update(id, newLike)
-      // state of blogs needs to be updated, otherwise it won't render like changes
+      const returnedBlog = await service.update(id, newLike)
       setBlogs((prevBlogs) =>
         prevBlogs.map((blog) => (blog.id === id ? returnedBlog : blog))
       )
@@ -76,13 +70,13 @@ const App = () => {
 
   const handleRemove = async (id) => {
     try {
-      const returnedBlog = await blogService.getId(id)
+      const returnedBlog = await service.getId(id)
       if (
         window.confirm(
           `Remove blog ${returnedBlog.title} by ${returnedBlog.author}?`
         )
       ) {
-        await blogService.remove(id)
+        await service.remove(id)
         setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id))
       }
     } catch (error) {
@@ -93,7 +87,7 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
-      <Notification message={errorMessage} />
+      <Notification />
 
       {user === null ? (
         <Togglable buttonLabel="login">
@@ -105,7 +99,7 @@ const App = () => {
           {user.name} logged in
           <button
             onClick={() => {
-              window.localStorage.removeItem('loggedNoteappUser')
+              window.localStorage.removeItem('loggedBlogappUser')
               setUser(null)
             }}
           >

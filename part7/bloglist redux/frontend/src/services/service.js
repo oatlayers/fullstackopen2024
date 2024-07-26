@@ -44,4 +44,9 @@ const remove = async (id) => {
   return response.data
 }
 
-export default { getAll, getId, setToken, create, update, remove }
+const login = async (credentials) => {
+  const response = await axios.post('/api/login', credentials)
+  return response.data
+}
+
+export default { getAll, getId, setToken, create, update, remove, login }
