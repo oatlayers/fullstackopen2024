@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
   const [visible, setVisible] = useState(false)
@@ -25,10 +25,10 @@ const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
     handleLike(id, newLike)
   }
 
-  const toggleRemove = () => {
-    if (blog.user.name === user) {
-      return <button onClick={() => handleRemove(id)}>remove</button>
-    }
+  const renderRemoveButton = () => {
+    return blog.user.name === user ? (
+      <button onClick={() => handleRemove(id)}>remove</button>
+    ) : null
   }
 
   return (
@@ -55,7 +55,7 @@ const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
           </button>
         </div>
         <div data-testid="blog-author">{blog.author}</div>
-        {toggleRemove()}
+        {renderRemoveButton()}
       </div>
     </div>
   )

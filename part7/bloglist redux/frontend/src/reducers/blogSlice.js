@@ -11,10 +11,20 @@ const blogSlice = createSlice({
     setBlogs(state, action) {
       return action.payload
     },
+    updateBlog(state, action) {
+      const index = state.findIndex((blog) => blog.id === action.payload.id)
+      if (index !== -1) {
+        state[index] = action.payload
+      }
+    },
+    removeBlog(state, action) {
+      return state.filter((blog) => blog.id !== action.payload)
+    },
   },
 })
 
-export const { createBlog, setBlogs } = blogSlice.actions
+export const { createBlog, setBlogs, updateBlog, removeBlog } =
+  blogSlice.actions
 
 export const fetchBlogs = () => async (dispatch) => {
   const blogs = await service.getAll()

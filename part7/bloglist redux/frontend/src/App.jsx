@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Blog from './components/Blog'
@@ -8,11 +8,17 @@ import Togglable from './components/Togglable'
 
 import service from './services/service'
 import { changeNotification } from './reducers/notificationSlice'
-import { createBlog, fetchBlogs } from './reducers/blogSlice'
+import {
+  createBlog,
+  fetchBlogs,
+  updateBlog,
+  removeBlog,
+} from './reducers/blogSlice'
+import { setUser, removeUser } from './reducers/userSlice'
 
 const App = () => {
   const blogs = useSelector((state) => state.blogs)
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
   const blogFormRef = useRef()
   const dispatch = useDispatch()
 
@@ -21,22 +27,22 @@ const App = () => {
     dispatch(fetchBlogs())
   }, [dispatch])
 
-  // prevent logout when reload
+  // prevent reload from logging out
   useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJson) {
-      const user = JSON.parse(loggedUserJson)
-      setUser(user)
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      dispatch(setUser(user))
       service.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
   const handleLogin = async (loginObject) => {
     try {
       const user = await service.login(loginObject)
+      dispatch(setUser(user))
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       service.setToken(user.token)
-      setUser(user)
     } catch (exception) {
       dispatch(changeNotification('Wrong credentials', 5))
     }
@@ -49,7 +55,8 @@ const App = () => {
       dispatch(createBlog(returnedBlog))
       dispatch(
         changeNotification(
-          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+          5
         )
       )
     } catch (error) {
@@ -60,9 +67,7 @@ const App = () => {
   const handleLike = async (id, newLike) => {
     try {
       const returnedBlog = await service.update(id, newLike)
-      setBlogs((prevBlogs) =>
-        prevBlogs.map((blog) => (blog.id === id ? returnedBlog : blog))
-      )
+      dispatch(updateBlog(returnedBlog))
     } catch (error) {
       console.error(error)
     }
@@ -76,8 +81,8 @@ const App = () => {
           `Remove blog ${returnedBlog.title} by ${returnedBlog.author}?`
         )
       ) {
+        dispatch(removeBlog(id))
         await service.remove(id)
-        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id))
       }
     } catch (error) {
       console.error(error)
@@ -100,7 +105,7 @@ const App = () => {
           <button
             onClick={() => {
               window.localStorage.removeItem('loggedBlogappUser')
-              setUser(null)
+              dispatch(removeUser())
             }}
           >
             logout
