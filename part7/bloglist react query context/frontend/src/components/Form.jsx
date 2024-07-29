@@ -1,19 +1,19 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 export const LoginForm = ({ createLogin }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleLogin = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     createLogin({
       username,
       password,
-    });
-    setUsername("");
-    setPassword("");
-  };
+    })
+    setUsername('')
+    setPassword('')
+  }
 
   return (
     <form onSubmit={handleLogin}>
@@ -40,29 +40,29 @@ export const LoginForm = ({ createLogin }) => {
       </div>
       <button type="submit">login</button>
     </form>
-  );
-};
+  )
+}
 
 LoginForm.propTypes = {
   createLogin: PropTypes.func.isRequired,
-};
+}
 
 export const NewBlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   const addBlog = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     createBlog({
       title: title,
       author: author,
       url: url,
-    });
-    setTitle("");
-    setAuthor("");
-    setUrl("");
-  };
+    })
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
 
   return (
     <form onSubmit={addBlog}>
@@ -104,5 +104,5 @@ export const NewBlogForm = ({ createBlog }) => {
         create
       </button>
     </form>
-  );
-};
+  )
+}
