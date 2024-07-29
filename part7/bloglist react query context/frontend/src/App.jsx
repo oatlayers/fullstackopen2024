@@ -4,25 +4,70 @@ import service from "./services/service";
 import Notification from "./components/Notification";
 import { NewBlogForm, LoginForm } from "./components/Form";
 import Togglable from "./components/Togglable";
+import { useNotification } from "./context/NotificationContext";
+import { useLogin } from "./context/LoginContext";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [user, setUser] = useState(null);
   const blogFormRef = useRef();
+  const { dispatch } = useNotification();
+  const { loginDispatch, user } = useLogin();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    service.getAll().then((blogs) => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-    });
-  }, []);
+  const getAndSort = async () => {
+    const res = await service.getAll();
+    return res.sort((a, b) => b.likes - a.likes);
+  };
 
+  const { data: blogs, isLoading } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: getAndSort,
+  });
+
+  const createBlogMutation = useMutation({
+    mutationFn: (blogObject) => service.create(blogObject),
+    onSuccess: (returnedBlog) => {
+      queryClient.invalidateQueries(["blogs"]);
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+      });
+      setTimeout(() => {
+        dispatch({ type: "CLEAR_NOTIFICATION" });
+      }, 5000);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const updateBlogMutation = useMutation({
+    mutationFn: (updateData) =>
+      service.update(updateData.id, updateData.newLike),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blogs"]);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  const removeBlogMutation = useMutation({
+    mutationFn: (id) => service.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blogs"]);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
+  // prevent reloading from logging out user
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem("loggedNoteappUser");
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson);
-      setUser(user);
+      loginDispatch({ type: "SET_USER", payload: user });
       service.setToken(user.token);
     }
   }, []);
@@ -30,44 +75,24 @@ const App = () => {
   const handleLogin = async (loginObject) => {
     try {
       const user = await service.login(loginObject);
+      loginDispatch({ type: "SET_USER", payload: user });
       window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
       service.setToken(user.token);
-      setUser(user);
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
-      console.log("error:", exception);
+      dispatch({ type: "SET_NOTIFICATION", payload: "Wrong credentials" });
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch({ type: "CLEAR_NOTIFICATION" });
       }, 5000);
     }
   };
 
   const handleSubmit = async (blogObject) => {
-    try {
-      blogFormRef.current.toggleVisibility();
-      const returnedBlog = await service.create(blogObject);
-      setBlogs(blogs.concat(returnedBlog));
-      setErrorMessage(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
-      );
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    } catch (error) {
-      console.error(error);
-    }
+    blogFormRef.current.toggleVisibility();
+    createBlogMutation.mutate(blogObject);
   };
 
   const handleLike = async (id, newLike) => {
-    try {
-      const returnedBlog = await service.update(id, newLike);
-      // state of blogs needs to be updated, otherwise it won't render like changes
-      setBlogs((prevBlogs) =>
-        prevBlogs.map((blog) => (blog.id === id ? returnedBlog : blog))
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    updateBlogMutation.mutate({ id, newLike });
   };
 
   const handleRemove = async (id) => {
@@ -78,18 +103,21 @@ const App = () => {
           `Remove blog ${returnedBlog.title} by ${returnedBlog.author}?`
         )
       ) {
-        await service.remove(id);
-        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+        removeBlogMutation.mutate(id);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
+  if (isLoading) {
+    return <div>loading data...</div>;
+  }
+
   return (
     <div>
       <h1>Blogs</h1>
-      <Notification message={errorMessage} />
+      <Notification />
 
       {user === null ? (
         <Togglable buttonLabel="login">
@@ -102,7 +130,7 @@ const App = () => {
           <button
             onClick={() => {
               window.localStorage.removeItem("loggedNoteappUser");
-              setUser(null);
+              loginDispatch({ type: "SET_USER", payload: null });
             }}
           >
             logout
