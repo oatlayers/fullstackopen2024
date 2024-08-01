@@ -1,27 +1,27 @@
-import { createContext, useReducer, useContext } from 'react'
+import { createContext, useReducer, useContext } from "react";
 
-const NotificationContext = createContext()
+const NotificationContext = createContext();
 
 const notificationReducer = (state, action) => {
   switch (action.type) {
-  case 'SET_NOTIFICATION':
-    return action.payload
-  case 'CLEAR_NOTIFICATION':
-    return null
+  case "SET_NOTIFICATION":
+    return action.payload;
+  case "CLEAR_NOTIFICATION":
+    return null;
   default:
-    return state
+    return state;
   }
-}
+};
 
 export const NotificationProvider = ({ children }) => {
-  const [notification, dispatch] = useReducer(notificationReducer, null)
+  const [notification, notifDispatch] = useReducer(notificationReducer, null);
 
   return (
-    <NotificationContext.Provider value={{ notification, dispatch }}>
+    <NotificationContext.Provider value={{ notification, notifDispatch }}>
       {children}
     </NotificationContext.Provider>
-  )
-}
+  );
+};
 
 // custom hook to use the notification context
-export const useNotification = () => useContext(NotificationContext)
+export const useNotification = () => useContext(NotificationContext);

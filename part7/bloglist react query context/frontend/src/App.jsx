@@ -1,157 +1,112 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import service from './services/service'
-import Notification from './components/Notification'
-import { NewBlogForm, LoginForm } from './components/Form'
-import Togglable from './components/Togglable'
-import { useNotification } from './context/NotificationContext'
-import { useLogin } from './context/LoginContext'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useRef } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Blog, { BlogDetail } from "./components/Blog";
+import Notification from "./components/Notification";
+import { NewBlogForm, LoginForm } from "./components/Form";
+import Togglable from "./components/Togglable";
+import Users from "./components/Users";
+import { UserDetailed } from "./components/Users";
+import { useLogin } from "./context/LoginContext";
+import { useBlogs } from "./hooks/useBlogs";
+import { useUsers } from "./hooks/useUsers";
+import { useLoginHandler } from "./hooks/useLogin";
+import service from "./services/service";
 
 const App = () => {
-  const blogFormRef = useRef()
-  const { dispatch } = useNotification()
-  const { loginDispatch, user } = useLogin()
-  const queryClient = useQueryClient()
+  const blogFormRef = useRef();
+  const { loginDispatch, user } = useLogin();
+  const { users } = useUsers();
+  const { handleLogin, handleLogout } = useLoginHandler(loginDispatch);
 
-  const getAndSort = async () => {
-    const res = await service.getAll()
-    return res.sort((a, b) => b.likes - a.likes)
-  }
-
-  const { data: blogs, isLoading } = useQuery({
-    queryKey: ['blogs'],
-    queryFn: getAndSort,
-  })
-
-  const createBlogMutation = useMutation({
-    mutationFn: (blogObject) => service.create(blogObject),
-    onSuccess: (returnedBlog) => {
-      queryClient.invalidateQueries(['blogs'])
-      dispatch({
-        type: 'SET_NOTIFICATION',
-        payload: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-      })
-      setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' })
-      }, 5000)
-    },
-    onError: (error) => {
-      console.error(error)
-    },
-  })
-
-  const updateBlogMutation = useMutation({
-    mutationFn: (updateData) =>
-      service.update(updateData.id, updateData.newLike),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['blogs'])
-    },
-    onError: (error) => {
-      console.error(error)
-    },
-  })
-
-  const removeBlogMutation = useMutation({
-    mutationFn: (id) => service.remove(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['blogs'])
-    },
-    onError: (error) => {
-      console.error(error)
-    },
-  })
-
-  // prevent reloading from logging out user
-  useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem('loggedNoteappUser')
-    if (loggedUserJson) {
-      const user = JSON.parse(loggedUserJson)
-      loginDispatch({ type: 'SET_USER', payload: user })
-      service.setToken(user.token)
-    }
-  }, [loginDispatch])
-
-  const handleLogin = async (loginObject) => {
-    try {
-      const user = await service.login(loginObject)
-      loginDispatch({ type: 'SET_USER', payload: user })
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
-      service.setToken(user.token)
-    } catch (exception) {
-      dispatch({ type: 'SET_NOTIFICATION', payload: 'Wrong credentials' })
-      setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' })
-      }, 5000)
-    }
-  }
-
-  const handleSubmit = async (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    createBlogMutation.mutate(blogObject)
-  }
-
-  const handleLike = async (id, newLike) => {
-    updateBlogMutation.mutate({ id, newLike })
-  }
+  const {
+    blogs,
+    isLoading,
+    createBlogMutation,
+    updateBlogMutation,
+    removeBlogMutation,
+  } = useBlogs();
 
   const handleRemove = async (id) => {
     try {
-      const returnedBlog = await service.getId(id)
+      const returnedBlog = await service.getId(id);
       if (
         window.confirm(
-          `Remove blog ${returnedBlog.title} by ${returnedBlog.author}?`
+          `remove blog ${returnedBlog.title} by ${returnedBlog.author}?`
         )
       ) {
-        removeBlogMutation.mutate(id)
+        removeBlogMutation.mutate(id);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   if (isLoading) {
-    return <div>loading data...</div>
+    return <div>loading data...</div>;
+  }
+
+  if (!users) {
+    return <div>loading users...</div>;
   }
 
   return (
-    <div>
-      <h1>Blogs</h1>
-      <Notification />
+    <Router>
+      <div>
+        <h1>Blogs</h1>
+        <Notification />
 
-      {user === null ? (
-        <Togglable buttonLabel="login">
-          <LoginForm createLogin={handleLogin} />
-        </Togglable>
-      ) : (
-        <div>
-          <h2>blogs</h2>
-          {user.name} logged in
-          <button
-            onClick={() => {
-              window.localStorage.removeItem('loggedNoteappUser')
-              loginDispatch({ type: 'SET_USER', payload: null })
-            }}
-          >
-            logout
-          </button>
-          <Togglable buttonLabel="new blog" ref={blogFormRef}>
-            <NewBlogForm createBlog={handleSubmit} />
+        {user === null ? (
+          <Togglable buttonLabel="login">
+            <LoginForm createLogin={handleLogin} />
           </Togglable>
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleLike={handleLike}
-              id={blog.id}
-              handleRemove={handleRemove}
-              user={user.name}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
+        ) : (
+          <>
+            <h2>blogs</h2>
+            {user.name} logged in
+            <button onClick={handleLogout}>logout</button>
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+              <NewBlogForm
+                createBlog={(blogObject) => {
+                  blogFormRef.current.toggleVisibility();
+                  createBlogMutation.mutate(blogObject);
+                }}
+              />
+            </Togglable>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <div>
+                    {blogs.map((blog) => (
+                      <Blog key={blog.id} blog={blog} />
+                    ))}
+                  </div>
+                }
+              />
+              <Route
+                path="/blogs/:id"
+                element={
+                  <BlogDetail
+                    blogs={blogs}
+                    handleLike={(id, newLike) =>
+                      updateBlogMutation.mutate({ id, newLike })
+                    }
+                    handleRemove={handleRemove}
+                    user={user ? user.name : ""}
+                  />
+                }
+              />
+              <Route
+                path="/user/:id"
+                element={<UserDetailed blogs={blogs} users={users} />}
+              />
+            </Routes>
+            <Users users={users} />
+          </>
+        )}
+      </div>
+    </Router>
+  );
+};
 
-export default App
+export default App;

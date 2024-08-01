@@ -1,20 +1,29 @@
-import { useState } from 'react'
+import { Link, useParams } from "react-router-dom";
 
-const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
-  const [visible, setVisible] = useState(false)
-  const hideWhenVisible = { display: visible ? 'none' : 'block' }
-  const showWhenVisible = { display: visible ? 'block' : 'none' }
-
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
-
+const Blog = ({ blog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: 'solid',
+    border: "solid",
     borderWidth: 1,
     marginBottom: 5,
+  };
+
+  return (
+    <div style={blogStyle}>
+      <Link to={`/blogs/${blog.id}`}>
+        {blog.title} {blog.author}
+      </Link>
+    </div>
+  );
+};
+
+export const BlogDetail = ({ blogs, handleLike, handleRemove, user }) => {
+  const { id } = useParams();
+  const blog = blogs.find((b) => b.id === id);
+
+  if (!blog) {
+    return <div>Blog not found</div>;
   }
 
   const addLike = () => {
@@ -24,44 +33,30 @@ const Blog = ({ blog, handleLike, id, handleRemove, user }) => {
       title: blog.title,
       url: blog.url,
       likes: blog.likes + 1,
-    }
-    handleLike(id, newLike)
-  }
+    };
+    handleLike(id, newLike);
+  };
 
   const toggleRemove = () => {
     if (blog.user.name === user) {
-      return <button onClick={() => handleRemove(id)}>remove</button>
+      return <button onClick={() => handleRemove(id)}>remove</button>;
     }
-  }
+  };
 
   return (
-    <div style={blogStyle}>
-      <div id="title-author" style={hideWhenVisible}>
+    <>
+      <h2>
         {blog.title} {blog.author}
-        <button id="view-button" onClick={toggleVisibility}>
-          view
-        </button>
+      </h2>
+      <a href={blog.url}>{blog.url}</a>
+      <div>
+        {blog.likes}
+        <button onClick={addLike}>like</button>
       </div>
+      <div>added by {user}</div>
+      {toggleRemove()}
+    </>
+  );
+};
 
-      <div id="content" style={showWhenVisible}>
-        <div data-testid="blog-title" id="title">
-          {blog.title}
-          <button id="hide-button" onClick={toggleVisibility}>
-            hide
-          </button>
-        </div>
-        <a href={blog.url}>{blog.url}</a>
-        <div id="likes">
-          {blog.likes}
-          <button data-testid="likes" id="likes-button" onClick={addLike}>
-            like
-          </button>
-        </div>
-        <div data-testid="blog-author">{blog.author}</div>
-        {toggleRemove()}
-      </div>
-    </div>
-  )
-}
-
-export default Blog
+export default Blog;
