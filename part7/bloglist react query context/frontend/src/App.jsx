@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Blog, { BlogDetail } from "./components/Blog";
 import Notification from "./components/Notification";
 import { NewBlogForm, LoginForm } from "./components/Form";
@@ -49,10 +49,23 @@ const App = () => {
     return <div>loading users...</div>;
   }
 
+  const style = {
+    padding: 5,
+    backgroundColor: "lightgrey",
+  };
+
   return (
     <Router>
       <div>
-        <h1>Blogs</h1>
+        <div style={style}>
+          <Link style={style} to="/">
+            blogs
+          </Link>
+          <Link style={style} to="/users">
+            users
+          </Link>
+          {user.name} logged in <button onClick={handleLogout}>logout</button>
+        </div>
         <Notification />
 
         {user === null ? (
@@ -61,9 +74,7 @@ const App = () => {
           </Togglable>
         ) : (
           <>
-            <h2>blogs</h2>
-            {user.name} logged in
-            <button onClick={handleLogout}>logout</button>
+            <h2>blog app</h2>
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <NewBlogForm
                 createBlog={(blogObject) => {
@@ -100,8 +111,8 @@ const App = () => {
                 path="/user/:id"
                 element={<UserDetailed blogs={blogs} users={users} />}
               />
+              <Route path="/users" element={<Users users={users} />} />
             </Routes>
-            <Users users={users} />
           </>
         )}
       </div>

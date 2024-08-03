@@ -65,7 +65,7 @@ blogsRouter.delete(
     } else {
       return response.status(401).json({ error: 'invalid user' })
     }
-  },
+  }
 )
 
 blogsRouter.put('/:id', async (request, response) => {
