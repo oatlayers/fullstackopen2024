@@ -22,6 +22,7 @@ const App = () => {
     blogs,
     isLoading,
     createBlogMutation,
+    createCommentMutation,
     updateBlogMutation,
     removeBlogMutation,
   } = useBlogs();
@@ -56,66 +57,67 @@ const App = () => {
 
   return (
     <Router>
-      <div>
-        <div style={style}>
-          <Link style={style} to="/">
-            blogs
-          </Link>
-          <Link style={style} to="/users">
-            users
-          </Link>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </div>
-        <Notification />
-
-        {user === null ? (
+      {user === null ? (
+        <>
+          <h2>blog app</h2>
           <Togglable buttonLabel="login">
             <LoginForm createLogin={handleLogin} />
           </Togglable>
-        ) : (
-          <>
-            <h2>blog app</h2>
-            <Togglable buttonLabel="new blog" ref={blogFormRef}>
-              <NewBlogForm
-                createBlog={(blogObject) => {
-                  blogFormRef.current.toggleVisibility();
-                  createBlogMutation.mutate(blogObject);
-                }}
-              />
-            </Togglable>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <div>
-                    {blogs.map((blog) => (
-                      <Blog key={blog.id} blog={blog} />
-                    ))}
-                  </div>
-                }
-              />
-              <Route
-                path="/blogs/:id"
-                element={
-                  <BlogDetail
-                    blogs={blogs}
-                    handleLike={(id, newLike) =>
-                      updateBlogMutation.mutate({ id, newLike })
-                    }
-                    handleRemove={handleRemove}
-                    user={user ? user.name : ""}
-                  />
-                }
-              />
-              <Route
-                path="/user/:id"
-                element={<UserDetailed blogs={blogs} users={users} />}
-              />
-              <Route path="/users" element={<Users users={users} />} />
-            </Routes>
-          </>
-        )}
-      </div>
+        </>
+      ) : (
+        <>
+          <div style={style}>
+            <Link style={style} to="/">
+              blogs
+            </Link>
+            <Link style={style} to="/users">
+              users
+            </Link>{" "}
+            {user.name} logged in <button onClick={handleLogout}>logout</button>
+          </div>
+          <Notification />
+          <h2>blog app</h2>
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <NewBlogForm
+              createBlog={(blogObject) => {
+                blogFormRef.current.toggleVisibility();
+                createBlogMutation.mutate(blogObject);
+              }}
+            />
+          </Togglable>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div>
+                  {blogs.map((blog) => (
+                    <Blog key={blog.id} blog={blog} />
+                  ))}
+                </div>
+              }
+            />
+            <Route
+              path="/blogs/:id"
+              element={
+                <BlogDetail
+                  blogs={blogs}
+                  handleLike={(id, newLike) =>
+                    updateBlogMutation.mutate({ id, newLike })
+                  }
+                  commentMutate={createCommentMutation}
+                  handleRemove={handleRemove}
+                  user={user ? user.name : ""}
+                />
+              }
+            />
+            <Route
+              path="/user/:id"
+              element={<UserDetailed blogs={blogs} users={users} />}
+            />
+            <Route path="/users" element={<Users users={users} />} />
+          </Routes>
+        </>
+      )}
     </Router>
   );
 };

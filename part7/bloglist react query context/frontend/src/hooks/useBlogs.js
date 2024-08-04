@@ -33,6 +33,16 @@ export const useBlogs = () => {
     },
   });
 
+  const createCommentMutation = useMutation({
+    mutationFn: (object) => service.createComment(object),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blogs"]);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
   const updateBlogMutation = useMutation({
     mutationFn: (updateData) =>
       service.update(updateData.id, updateData.newLike),
@@ -58,6 +68,7 @@ export const useBlogs = () => {
     blogs,
     isLoading,
     createBlogMutation,
+    createCommentMutation,
     updateBlogMutation,
     removeBlogMutation,
   };

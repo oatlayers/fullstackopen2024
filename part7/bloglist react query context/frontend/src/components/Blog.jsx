@@ -1,4 +1,6 @@
 import { Link, useParams } from "react-router-dom";
+import service from "../services/service";
+import { useState } from "react";
 
 const Blog = ({ blog }) => {
   const blogStyle = {
@@ -18,7 +20,14 @@ const Blog = ({ blog }) => {
   );
 };
 
-export const BlogDetail = ({ blogs, handleLike, handleRemove, user }) => {
+export const BlogDetail = ({
+  blogs,
+  handleLike,
+  commentMutate,
+  handleRemove,
+  user,
+}) => {
+  const [comment, setComment] = useState("");
   const { id } = useParams();
   const blog = blogs.find((b) => b.id === id);
 
@@ -43,6 +52,13 @@ export const BlogDetail = ({ blogs, handleLike, handleRemove, user }) => {
     }
   };
 
+  const handleComment = async (event) => {
+    event.preventDefault();
+    const blogId = blog.id;
+    commentMutate.mutate({ comment: comment, id: blogId });
+    setComment("");
+  };
+
   return (
     <>
       <h2>
@@ -54,6 +70,22 @@ export const BlogDetail = ({ blogs, handleLike, handleRemove, user }) => {
         <button onClick={addLike}>like</button>
       </div>
       <div>added by {user}</div>
+      <h3>comments</h3>
+      <form onSubmit={handleComment}>
+        <input
+          type="text"
+          name="Comment"
+          placeholder="type something..."
+          value={comment}
+          onChange={({ target }) => setComment(target.value)}
+        />
+        <button type="submit">add comment</button>
+      </form>
+      <ul>
+        {blog.comments.map((comment) => (
+          <li key={comment.id}>{comment.comment}</li>
+        ))}
+      </ul>
       {toggleRemove()}
     </>
   );

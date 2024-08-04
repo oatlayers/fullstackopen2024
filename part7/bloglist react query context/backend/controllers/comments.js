@@ -6,11 +6,9 @@ const middleware = require('../utils/middleware')
 commentsRouter.get('/', async (request, response) => {
   const blogId = request.params.id
   const blog = await Blog.findById(blogId).populate('comments', { comment: 1 })
-
   if (!blog) {
     return response.status(404).json({ error: 'Blog not found' })
   }
-
   response.json(blog.comments)
 })
 
