@@ -1,4 +1,5 @@
 import { useNotification } from "../context/NotificationContext";
+import { Alert } from "@mui/material";
 
 const Notification = () => {
   const { notification } = useNotification();
@@ -8,10 +9,10 @@ const Notification = () => {
   }
 
   if (notification.includes("added")) {
-    return <div className="blog">{notification}</div>;
+    return <Alert severity="success"> {notification} </Alert>;
   }
 
-  return <div className="error">{notification}</div>;
+  return <Alert severity="error"> {notification} </Alert>;
 };
 
 export default Notification;

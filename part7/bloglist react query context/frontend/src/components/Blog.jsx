@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
-import service from "../services/service";
 import { useState } from "react";
+import { Button, TextField } from "@mui/material";
 
 const Blog = ({ blog }) => {
   const blogStyle = {
@@ -48,7 +48,15 @@ export const BlogDetail = ({
 
   const toggleRemove = () => {
     if (blog.user.name === user) {
-      return <button onClick={() => handleRemove(id)}>remove</button>;
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleRemove(id)}
+        >
+          remove
+        </Button>
+      );
     }
   };
 
@@ -67,19 +75,25 @@ export const BlogDetail = ({
       <a href={blog.url}>{blog.url}</a>
       <div>
         {blog.likes}
-        <button onClick={addLike}>like</button>
+        <Button variant="contained" color="primary" onClick={addLike}>
+          like
+        </Button>
       </div>
       <div>added by {user}</div>
       <h3>comments</h3>
       <form onSubmit={handleComment}>
-        <input
+        <TextField
           type="text"
           name="Comment"
           placeholder="type something..."
           value={comment}
           onChange={({ target }) => setComment(target.value)}
+          variant="outlined"
+          size="small"
         />
-        <button type="submit">add comment</button>
+        <Button variant="contained" color="primary" type="submit">
+          add comment
+        </Button>
       </form>
       <ul>
         {blog.comments.map((comment) => (

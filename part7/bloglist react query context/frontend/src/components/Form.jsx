@@ -1,5 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import { Button, TextField } from "@mui/material";
 
 export const LoginForm = ({ createLogin }) => {
   const [username, setUsername] = useState("");
@@ -20,25 +21,31 @@ export const LoginForm = ({ createLogin }) => {
       <h2>log in to application</h2>
       <div>
         username
-        <input
+        <TextField
           data-testid="username"
           type="text"
           value={username}
           name="Username"
           onChange={({ target }) => setUsername(target.value)}
+          variant="outlined"
+          size="small"
         />
       </div>
       <div>
         password
-        <input
+        <TextField
           data-testid="password"
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
+          variant="outlined"
+          size="small"
         />
       </div>
-      <button type="submit">login</button>
+      <Button variant="contained" color="primary" type="submit">
+        login
+      </Button>
     </form>
   );
 };
@@ -69,40 +76,46 @@ export const NewBlogForm = ({ createBlog }) => {
       <h2>create new</h2>
       <div>
         title:
-        <input
+        <TextField
           data-testid="title"
           type="text"
           value={title}
           name="Title"
           onChange={({ target }) => setTitle(target.value)}
           id="title"
+          variant="outlined"
+          size="small"
         />
       </div>
       <div>
         author:
-        <input
+        <TextField
           data-testid="author"
           type="text"
           value={author}
           name="Author"
           onChange={({ target }) => setAuthor(target.value)}
           id="author"
+          variant="outlined"
+          size="small"
         />
       </div>
       <div>
         url:
-        <input
+        <TextField
           data-testid="url"
           type="text"
           value={url}
           name="Url"
           onChange={({ target }) => setUrl(target.value)}
           id="url"
+          variant="outlined"
+          size="small"
         />
       </div>
-      <button id="save" type="submit">
+      <Button variant="contained" color="primary" id="save" type="submit">
         create
-      </button>
+      </Button>
     </form>
   );
 };

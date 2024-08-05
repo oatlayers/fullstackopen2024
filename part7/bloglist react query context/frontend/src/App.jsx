@@ -11,6 +11,7 @@ import { useBlogs } from "./hooks/useBlogs";
 import { useUsers } from "./hooks/useUsers";
 import { useLoginHandler } from "./hooks/useLogin";
 import service from "./services/service";
+import { Container, Button } from "@mui/material";
 
 const App = () => {
   const blogFormRef = useRef();
@@ -52,73 +53,85 @@ const App = () => {
 
   const style = {
     padding: 5,
-    backgroundColor: "lightgrey",
+    backgroundColor: "lightblue",
   };
 
   return (
-    <Router>
-      {user === null ? (
-        <>
-          <h2>blog app</h2>
-          <Togglable buttonLabel="login">
-            <LoginForm createLogin={handleLogin} />
-          </Togglable>
-        </>
-      ) : (
-        <>
-          <div style={style}>
-            <Link style={style} to="/">
-              blogs
-            </Link>
-            <Link style={style} to="/users">
-              users
-            </Link>{" "}
-            {user.name} logged in <button onClick={handleLogout}>logout</button>
-          </div>
-          <Notification />
-          <h2>blog app</h2>
-          <Togglable buttonLabel="new blog" ref={blogFormRef}>
-            <NewBlogForm
-              createBlog={(blogObject) => {
-                blogFormRef.current.toggleVisibility();
-                createBlogMutation.mutate(blogObject);
-              }}
-            />
-          </Togglable>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <div>
-                  {blogs.map((blog) => (
-                    <Blog key={blog.id} blog={blog} />
-                  ))}
-                </div>
-              }
-            />
-            <Route
-              path="/blogs/:id"
-              element={
-                <BlogDetail
-                  blogs={blogs}
-                  handleLike={(id, newLike) =>
-                    updateBlogMutation.mutate({ id, newLike })
-                  }
-                  commentMutate={createCommentMutation}
-                  handleRemove={handleRemove}
-                  user={user ? user.name : ""}
-                />
-              }
-            />
-            <Route
-              path="/user/:id"
-              element={<UserDetailed blogs={blogs} users={users} />}
-            />
-            <Route path="/users" element={<Users users={users} />} />
-          </Routes>
-        </>
-      )}
-    </Router>
+    <Container>
+      <Router>
+        {user === null ? (
+          <>
+            <h2>blog app</h2>
+            <Notification />
+            <Togglable buttonLabel="login">
+              <LoginForm createLogin={handleLogin} />
+            </Togglable>
+          </>
+        ) : (
+          <>
+            <div style={style}>
+              <Link style={style} to="/">
+                blogs
+              </Link>
+              <Link style={style} to="/users">
+                users
+              </Link>{" "}
+              {user.name} logged in{" "}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleLogout}
+              >
+                logout
+              </Button>
+            </div>
+
+            <Notification />
+            <h2>blog app</h2>
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+              <NewBlogForm
+                createBlog={(blogObject) => {
+                  blogFormRef.current.toggleVisibility();
+                  createBlogMutation.mutate(blogObject);
+                }}
+              />
+            </Togglable>
+
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <div>
+                    {blogs.map((blog) => (
+                      <Blog key={blog.id} blog={blog} />
+                    ))}
+                  </div>
+                }
+              />
+              <Route
+                path="/blogs/:id"
+                element={
+                  <BlogDetail
+                    blogs={blogs}
+                    handleLike={(id, newLike) =>
+                      updateBlogMutation.mutate({ id, newLike })
+                    }
+                    commentMutate={createCommentMutation}
+                    handleRemove={handleRemove}
+                    user={user ? user.name : ""}
+                  />
+                }
+              />
+              <Route
+                path="/user/:id"
+                element={<UserDetailed blogs={blogs} users={users} />}
+              />
+              <Route path="/users" element={<Users users={users} />} />
+            </Routes>
+          </>
+        )}
+      </Router>
+    </Container>
   );
 };
 
