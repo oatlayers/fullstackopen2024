@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "dotenvx run -- node index.js",
+    "dev": "dotenvx run -- nodemon index.js",
+    "test": "dotenvx run --  echo \"Error: no test specified\" && exit 1"
   },
   "author": "oatlayers",
   "license": "ISC",
